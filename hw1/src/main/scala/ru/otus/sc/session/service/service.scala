@@ -11,7 +11,7 @@ trait SessionService {
    * Get current session ID
    * @return current session ID
    */
-  def getId: SessionIdResponse
+  def id: SessionIdResponse
 }
 
 /**
@@ -19,5 +19,5 @@ trait SessionService {
  * @param dao DAO for access to current session properties
  */
 class SessionServiceImpl(dao: SessionDao) extends SessionService {
-  def getId: SessionIdResponse = SessionIdResponse(dao.getId)
+  def id: SessionIdResponse = SessionIdResponse(dao.id)
 }

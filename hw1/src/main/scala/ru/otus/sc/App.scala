@@ -47,33 +47,33 @@ trait App {
    * Get available storage keys that available in this application
    * @return response with list of keys
    */
-  def getAvailableStorageKeys: StorageKeysResponse
+  def availableStorageKeys: StorageKeysResponse
 
   /**
    * Get value from storage
    * @param request request to storage service to getting value
    * @return response from storage service
    */
-  def getStorageValue(request: StorageValueRequest): StorageValueResponse
+  def storageValue(request: StorageValueRequest): StorageValueResponse
 
   /**
    * Set value in storage
    * @param request request to set value in storage
    * @return response from storage service
    */
-  def setStorageValue(request: SetStorageValueRequest): SetStorageValueResponse
+  def storageValue(request: SetStorageValueRequest): SetStorageValueResponse
 
   /**
    * Get all pairs currently saved in storage
    * @return response from storage service
    */
-  def getAllStorageValues: StorageValuesResponse
+  def allStorageValues: StorageValuesResponse
 
   /**
    * Get current session ID of application
    * @return
    */
-  def getSessionId: SessionIdResponse
+  def sessionId: SessionIdResponse
 
   /**
    * Sign up in application
@@ -107,14 +107,14 @@ object App {
 
     def increment(): IncrementResponse = increment.increment()
 
-    val getAvailableStorageKeys: StorageKeysResponse = storage.getAvailableKeys
-    def getStorageValue(request: StorageValueRequest): StorageValueResponse =
-      storage.getValue(request)
-    def setStorageValue(request: SetStorageValueRequest): SetStorageValueResponse =
-      storage.setValue(request)
-    def getAllStorageValues: StorageValuesResponse = storage.getAllValues
+    val availableStorageKeys: StorageKeysResponse = storage.availableKeys
+    def storageValue(request: StorageValueRequest): StorageValueResponse =
+      storage.value(request)
+    def storageValue(request: SetStorageValueRequest): SetStorageValueResponse =
+      storage.value(request)
+    def allStorageValues: StorageValuesResponse = storage.allValues
 
-    def getSessionId: SessionIdResponse = session.getId
+    def sessionId: SessionIdResponse = session.id
 
     def signUp(request: SignUpRequest): SignUpResponse = auth.signUp(request)
     def logIn(request: LogInRequest): LoginResponse = auth.logIn(request)

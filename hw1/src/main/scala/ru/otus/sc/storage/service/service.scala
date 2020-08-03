@@ -11,27 +11,27 @@ trait StorageService {
    * Get all available keys supported by storage
    * @return response that holds keys
    */
-  def getAvailableKeys: StorageKeysResponse
+  def availableKeys: StorageKeysResponse
 
   /**
    * Get concrete value
    * @param request holds key to get value associated with
    * @return response that holds value if exists
    */
-  def getValue(request: StorageValueRequest): StorageValueResponse
+  def value(request: StorageValueRequest): StorageValueResponse
 
   /**
    * Associate concrete key with concrete value
    * @param request holds key and value
    * @return response that says have need value saved in storage
    */
-  def setValue(request: SetStorageValueRequest): SetStorageValueResponse
+  def value(request: SetStorageValueRequest): SetStorageValueResponse
 
   /**
    * Get all key-value pairs currently in storage
    * @return key-value pairs
    */
-  def getAllValues: StorageValuesResponse
+  def allValues: StorageValuesResponse
 }
 
 /**
@@ -39,13 +39,15 @@ trait StorageService {
  * @param dao DAO for work with storage
  */
 class StorageServiceImpl(dao: StorageDao) extends StorageService {
-  val getAvailableKeys: StorageKeysResponse = StorageKeysResponse(dao.getAvailableKeys)
+  val availableKeys: StorageKeysResponse = StorageKeysResponse(dao.availableKeys)
 
-  def getValue(request: StorageValueRequest): StorageValueResponse =
-    StorageValueResponse(dao.getValue(request.key))
+  def value(request: StorageValueRequest): StorageValueResponse =
+    StorageValueResponse(dao.value(request.key))
 
-  def setValue(request: SetStorageValueRequest): SetStorageValueResponse =
-    SetStorageValueResponse(dao.setValue(request.key, request.value))
+  def value(request: SetStorageValueRequest): SetStorageValueResponse = {
+    dao.value(request.key, request.value)
+    SetStorageValueResponse(dao.value(request.key).isDefined)
+  }
 
-  def getAllValues: StorageValuesResponse = StorageValuesResponse(dao.getAllValues)
+  def allValues: StorageValuesResponse = StorageValuesResponse(dao.allValues)
 }

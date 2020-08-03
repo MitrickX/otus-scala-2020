@@ -8,16 +8,16 @@ trait SessionDao {
    * Get current session ID
    * @return
    */
-  def getId: String
+  def id: String
 }
 
 /**
  * Session DAO implementation that returns one time generated session ID
  */
 class SessionDaoImpl extends SessionDao {
-  lazy val getId: String = {
+  lazy val id: String = {
     val r = scala.util.Random
-    val id = r.nextInt(1000)
+    val id = r.nextInt(1_000)
     s"sessID$id"
   }
 }
