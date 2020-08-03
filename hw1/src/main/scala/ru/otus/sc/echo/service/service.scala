@@ -13,3 +13,10 @@ trait EchoService {
    */
   def echo(request: EchoRequest): EchoResponse
 }
+
+/**
+ * Echo service implementation - send back whatever message have been sent to service
+ */
+class EchoServiceImpl extends EchoService {
+  def echo(request: EchoRequest): EchoResponse = EchoResponse(request.message)
+}

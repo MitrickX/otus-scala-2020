@@ -1,6 +1,15 @@
-package ru.otus.sc.increment.dao.impl
+package ru.otus.sc.increment.dao
 
-import ru.otus.sc.increment.dao.IncrementDao
+/**
+ * DAO for increment service
+ */
+trait IncrementDao {
+  /**
+   * Increment counter
+   * @return incremented counter
+   */
+  def increment(): Int
+}
 
 /**
  * Implement of DAO for increment service

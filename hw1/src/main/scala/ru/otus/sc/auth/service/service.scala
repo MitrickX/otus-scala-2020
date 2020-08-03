@@ -1,8 +1,27 @@
-package ru.otus.sc.auth.service.impl
+package ru.otus.sc.auth.service
 
 import ru.otus.sc.auth.dao.AuthDao
 import ru.otus.sc.auth.model.{LogInRequest, LoginResponse, SignUpRequest, SignUpResponse}
-import ru.otus.sc.auth.service.AuthService
+
+/**
+ * Auth service
+ */
+trait AuthService {
+  /**
+   * Sign up
+   * @param request holds credentials
+   * @return sign up result
+   */
+  def signUp(request: SignUpRequest): SignUpResponse
+
+  /**
+   * Log in
+   * @param request holds credentials
+   * @return log in result
+   */
+  def logIn(request: LogInRequest): LoginResponse
+}
+
 
 /**
  * Concrete implementation of auth service

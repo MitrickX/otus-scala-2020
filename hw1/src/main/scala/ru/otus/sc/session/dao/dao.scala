@@ -1,6 +1,15 @@
-package ru.otus.sc.session.dao.impl
+package ru.otus.sc.session.dao
 
-import ru.otus.sc.session.dao.SessionDao
+/**
+ * DAO for session service
+ */
+trait SessionDao {
+  /**
+   * Get current session ID
+   * @return
+   */
+  def getId: String
+}
 
 /**
  * Session DAO implementation that returns one time generated session ID

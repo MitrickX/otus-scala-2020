@@ -6,3 +6,9 @@ package ru.otus.sc.greet.model
  * @param isHuman is greeting human
  */
 case class GreetRequest(name: String, isHuman: Boolean = true)
+
+/**
+ * Response from greeting service
+ * @param greeting
+ */
+case class GreetResponse(greeting: String)

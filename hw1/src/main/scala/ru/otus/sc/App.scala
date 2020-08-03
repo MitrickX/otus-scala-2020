@@ -1,28 +1,23 @@
 package ru.otus.sc
 
-import ru.otus.sc.auth.dao.impl.AuthDaoImpl
+import ru.otus.sc.auth.dao.AuthDaoImpl
 import ru.otus.sc.auth.model.{LogInRequest, LoginResponse, SignUpRequest, SignUpResponse}
-import ru.otus.sc.auth.service.AuthService
-import ru.otus.sc.auth.service.impl.AuthServiceImpl
+import ru.otus.sc.auth.service.{AuthService, AuthServiceImpl}
 import ru.otus.sc.echo.model.{EchoRequest, EchoResponse}
 import ru.otus.sc.echo.service.EchoService
-import ru.otus.sc.echo.service.impl.EchoServiceImpl
-import ru.otus.sc.greet.dao.impl.GreetingDaoImpl
+import ru.otus.sc.echo.service.EchoServiceImpl
+import ru.otus.sc.greet.dao.GreetingDaoImpl
 import ru.otus.sc.greet.model.{GreetRequest, GreetResponse}
-import ru.otus.sc.greet.service.GreetingService
-import ru.otus.sc.greet.service.impl.GreetingServiceImpl
-import ru.otus.sc.increment.dao.impl.IncrementDaoImpl
+import ru.otus.sc.greet.service.{GreetingService, GreetingServiceImpl}
+import ru.otus.sc.increment.dao.IncrementDaoImpl
 import ru.otus.sc.increment.model.IncrementResponse
-import ru.otus.sc.increment.service.IncrementService
-import ru.otus.sc.increment.service.impl.IncrementServiceImpl
-import ru.otus.sc.session.dao.impl.SessionDaoImpl
+import ru.otus.sc.increment.service.{IncrementService, IncrementServiceImpl}
+import ru.otus.sc.session.dao.SessionDaoImpl
 import ru.otus.sc.session.model.SessionIdResponse
-import ru.otus.sc.session.service.SessionService
-import ru.otus.sc.session.service.impl.SessionServiceImpl
-import ru.otus.sc.storage.dao.impl.StorageDaoImpl
+import ru.otus.sc.session.service.{SessionService, SessionServiceImpl}
+import ru.otus.sc.storage.dao.StorageDaoImpl
 import ru.otus.sc.storage.model._
-import ru.otus.sc.storage.service.StorageService
-import ru.otus.sc.storage.service.impl.StorageServiceImpl
+import ru.otus.sc.storage.service.{StorageService, StorageServiceImpl}
 
 /**
  * Application interface

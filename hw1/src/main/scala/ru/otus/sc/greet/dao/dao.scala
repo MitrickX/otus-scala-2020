@@ -16,3 +16,11 @@ trait GreetingDao {
    */
   def greetingPostfix: String
 }
+
+/**
+ * Greeting DAO implementation
+ */
+class GreetingDaoImpl extends GreetingDao {
+  val greetingPrefix: String  = "Hi"
+  val greetingPostfix: String = "!"
+}
