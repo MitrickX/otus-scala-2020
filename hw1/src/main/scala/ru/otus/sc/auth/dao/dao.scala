@@ -1,44 +1,27 @@
 package ru.otus.sc.auth.dao
+import ru.otus.sc.user.model.User
 
-/**
-  * DAO for auth service
-  * Store credentials
-  */
 trait AuthDao {
-
-  /**
-    * Save credentials
-    * @param login login
-    * @param password password
-    */
-  def saveCredentials(login: String, password: String): Unit
-
-  /**
-    * Get credentials by login
-    * @param login login by which need to find credentials
-    * @return login, password pair if found
-    */
-  def credentials(login: String): Option[(String, String)]
-
-  /**
-    * Exists by this login?
-    * @param login login by which check existing of credentials
-    * @return
-    */
-  def exists(login: String): Boolean
+  def saveCredentials(user: User, login: String, password: String): Unit
+  def credentials(user: User, login: String): Option[(String, String)]
+  def exists(user: User, login: String): Boolean
 }
 
 /**
   * Auth DAO implementation
   */
 class AuthDaoImpl extends AuthDao {
-  private var credentials: Map[String, String] = Map()
+  private var credentials: Map[User, (String, String)] = Map.empty
 
-  def saveCredentials(login: String, password: String): Unit =
-    credentials += (login -> password)
+  def saveCredentials(user: User, login: String, password: String): Unit =
+    credentials += user -> (login, password)
 
-  def credentials(login: String): Option[(String, String)] =
-    credentials.get(login).map(login -> _)
+  def credentials(user: User, login: String): Option[(String, String)] =
+    credentials.get(user)
 
-  def exists(login: String): Boolean = credentials.contains(login)
+  def exists(user: User, login: String): Boolean =
+    credentials.get(user) match {
+      case None         => false
+      case Some((l, _)) => l == login
+    }
 }

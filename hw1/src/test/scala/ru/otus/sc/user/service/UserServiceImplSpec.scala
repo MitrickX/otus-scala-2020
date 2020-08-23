@@ -5,6 +5,7 @@ import java.util.UUID
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers._
+import ru.otus.sc.user.dao.UserDao
 import ru.otus.sc.user.model.{
   CreateUserRequest,
   CreateUserResponse,
@@ -18,8 +19,6 @@ import ru.otus.sc.user.model.{
   UpdateUserResponse,
   User
 }
-
-import scala.ru.otus.sc.user.dao.UserDao
 
 class UserServiceImplSpec extends AnyFreeSpec with MockFactory {
   private val user1 = User(Some(UUID.randomUUID()), "User1", "Test", 30)

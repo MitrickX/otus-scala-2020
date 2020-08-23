@@ -1,4 +1,4 @@
-package scala.ru.otus.sc.user.dao
+package ru.otus.sc.user.dao
 
 import java.util.UUID
 

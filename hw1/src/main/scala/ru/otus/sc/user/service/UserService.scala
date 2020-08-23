@@ -1,5 +1,6 @@
 package ru.otus.sc.user.service
 
+import ru.otus.sc.user.dao.UserDao
 import ru.otus.sc.user.model.{
   CreateUserRequest,
   CreateUserResponse,
@@ -12,8 +13,6 @@ import ru.otus.sc.user.model.{
   UpdateUserRequest,
   UpdateUserResponse
 }
-
-import scala.ru.otus.sc.user.dao.UserDao
 
 trait UserService {
   def createUser(request: CreateUserRequest): CreateUserResponse
