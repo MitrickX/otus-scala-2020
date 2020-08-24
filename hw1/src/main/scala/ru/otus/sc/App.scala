@@ -13,93 +13,126 @@ import ru.otus.sc.increment.dao.IncrementDaoImpl
 import ru.otus.sc.increment.model.IncrementResponse
 import ru.otus.sc.increment.service.{IncrementService, IncrementServiceImpl}
 import ru.otus.sc.session.dao.SessionDaoImpl
-import ru.otus.sc.session.model.SessionIdResponse
+import ru.otus.sc.session.model.{
+  SessionIdResponse,
+  SessionUserRequest,
+  SessionUserResponse,
+  SetSessionUserRequest,
+  SetSessionUserResponse
+}
 import ru.otus.sc.session.service.{SessionService, SessionServiceImpl}
 import ru.otus.sc.storage.dao.StorageDaoImpl
 import ru.otus.sc.storage.model._
 import ru.otus.sc.storage.service.{StorageService, StorageServiceImpl}
+import ru.otus.sc.user.dao.UserDaoImpl
+import ru.otus.sc.user.model.{
+  CreateUserRequest,
+  CreateUserResponse,
+  DeleteUserRequest,
+  DeleteUserResponse,
+  FindUsersRequest,
+  FindUsersResponse,
+  GetUserRequest,
+  GetUserResponse,
+  UpdateUserRequest,
+  UpdateUserResponse
+}
+import ru.otus.sc.user.service.{UserService, UserServiceImpl}
 
 /**
- * Application interface
- */
+  * Application interface
+  */
 trait App {
+
   /**
-   * Greeting service
-   * @param request request to greeting service
-   * @return greeting response
-   */
+    * Greeting service
+    * @param request request to greeting service
+    * @return greeting response
+    */
   def greet(request: GreetRequest): GreetResponse
 
   /**
-   * Echo service
-   * @param request request to echo service
-   * @return echo response
-   */
+    * Echo service
+    * @param request request to echo service
+    * @return echo response
+    */
   def echo(request: EchoRequest): EchoResponse
 
   /**
-   * Increment service
-   * @return response of increment service
-   */
+    * Increment service
+    * @return response of increment service
+    */
   def increment(): IncrementResponse
 
   /**
-   * Get available storage keys that available in this application
-   * @return response with list of keys
-   */
+    * Get available storage keys that available in this application
+    * @return response with list of keys
+    */
   def availableStorageKeys: StorageKeysResponse
 
   /**
-   * Get value from storage
-   * @param request request to storage service to getting value
-   * @return response from storage service
-   */
+    * Get value from storage
+    * @param request request to storage service to getting value
+    * @return response from storage service
+    */
   def storageValue(request: StorageValueRequest): StorageValueResponse
 
   /**
-   * Set value in storage
-   * @param request request to set value in storage
-   * @return response from storage service
-   */
+    * Set value in storage
+    * @param request request to set value in storage
+    * @return response from storage service
+    */
   def storageValue(request: SetStorageValueRequest): SetStorageValueResponse
 
   /**
-   * Get all pairs currently saved in storage
-   * @return response from storage service
-   */
+    * Get all pairs currently saved in storage
+    * @return response from storage service
+    */
   def allStorageValues: StorageValuesResponse
 
   /**
-   * Get current session ID of application
-   * @return
-   */
+    * Get current session ID of application
+    * @return
+    */
   def sessionId: SessionIdResponse
 
+  def sessionUser(request: SetSessionUserRequest): SetSessionUserResponse
+  def sessionUser(request: SessionUserRequest): SessionUserResponse
+
   /**
-   * Sign up in application
-   * @param request request for singing up
-   * @return response about signing up
-   */
+    * Sign up in application
+    * @param request request for singing up
+    * @return response about signing up
+    */
   def signUp(request: SignUpRequest): SignUpResponse
 
   /**
-   * Log in to application
-   * @param request request to logging in
-   * @return response about logging in
-   */
+    * Log in to application
+    * @param request request to logging in
+    * @return response about logging in
+    */
   def logIn(request: LogInRequest): LoginResponse
+
+  def createUser(request: CreateUserRequest): CreateUserResponse
+  def getUser(request: GetUserRequest): GetUserResponse
+  def updateUser(request: UpdateUserRequest): UpdateUserResponse
+  def deleteUser(request: DeleteUserRequest): DeleteUserResponse
+  def findUsers(request: FindUsersRequest): FindUsersResponse
 }
 
 /**
- * Concrete application implementation
- */
+  * Concrete application implementation
+  */
 object App {
-  private class AppImpl(greeting: GreetingService,
-                        echo: EchoService,
-                        increment: IncrementService,
-                        storage: StorageService,
-                        session: SessionService,
-                        auth: AuthService) extends App {
+  private class AppImpl(
+      greeting: GreetingService,
+      echo: EchoService,
+      increment: IncrementService,
+      storage: StorageService,
+      session: SessionService,
+      auth: AuthService,
+      user: UserService
+  ) extends App {
 
     def greet(request: GreetRequest): GreetResponse = greeting.greet(request)
 
@@ -114,10 +147,18 @@ object App {
       storage.value(request)
     def allStorageValues: StorageValuesResponse = storage.allValues
 
-    def sessionId: SessionIdResponse = session.id
+    def sessionId: SessionIdResponse                                        = session.id
+    def sessionUser(request: SetSessionUserRequest): SetSessionUserResponse = session.user(request)
+    def sessionUser(request: SessionUserRequest): SessionUserResponse       = session.user(request)
 
     def signUp(request: SignUpRequest): SignUpResponse = auth.signUp(request)
-    def logIn(request: LogInRequest): LoginResponse = auth.logIn(request)
+    def logIn(request: LogInRequest): LoginResponse    = auth.logIn(request)
+
+    def createUser(request: CreateUserRequest): CreateUserResponse = user.createUser(request)
+    def getUser(request: GetUserRequest): GetUserResponse          = user.getUser(request)
+    def updateUser(request: UpdateUserRequest): UpdateUserResponse = user.updateUser(request)
+    def deleteUser(request: DeleteUserRequest): DeleteUserResponse = user.deleteUser(request)
+    def findUsers(request: FindUsersRequest): FindUsersResponse    = user.findUsers(request)
   }
 
   def apply(): App = {
@@ -126,17 +167,20 @@ object App {
 
     val echoService = new EchoServiceImpl()
 
-    val incrementDao = new IncrementDaoImpl
+    val incrementDao     = new IncrementDaoImpl
     val incrementService = new IncrementServiceImpl(incrementDao)
 
-    val storageDao = new StorageDaoImpl
+    val storageDao     = new StorageDaoImpl
     val storageService = new StorageServiceImpl(storageDao)
 
-    val sessionDao = new SessionDaoImpl
+    val sessionDao     = new SessionDaoImpl
     val sessionService = new SessionServiceImpl(sessionDao)
 
-    val authDao = new AuthDaoImpl
+    val authDao     = new AuthDaoImpl
     val authService = new AuthServiceImpl(authDao)
+
+    val userDao     = new UserDaoImpl
+    val userService = new UserServiceImpl(userDao)
 
     new AppImpl(
       greeting = greetingService,
@@ -144,7 +188,8 @@ object App {
       increment = incrementService,
       storage = storageService,
       session = sessionService,
-      auth = authService
+      auth = authService,
+      user = userService
     )
   }
 }
