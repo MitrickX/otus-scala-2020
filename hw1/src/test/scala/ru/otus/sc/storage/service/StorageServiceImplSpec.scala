@@ -25,7 +25,7 @@ class StorageServiceImplSpec extends AnyFreeSpec with MockFactory {
         (dao.value: String => Option[String]).expects(key).returns(Some(value))
         (dao.value: (String, String) => Unit).expects(key, value).returns()
 
-        srv.value(SetStorageValueRequest(key, value)) shouldBe SetStorageValueResponse(true)
+        srv.value(SetStorageValueRequest(key, value)) shouldBe SetStorageValueResponse.Success
       }
 
       "should not set value by not available key" in {
@@ -37,7 +37,7 @@ class StorageServiceImplSpec extends AnyFreeSpec with MockFactory {
         (dao.value: String => Option[String]).expects(key).returns(None)
         (dao.value: (String, String) => Unit).expects(key, value).returns()
 
-        srv.value(SetStorageValueRequest(key, value)) shouldBe SetStorageValueResponse(false)
+        srv.value(SetStorageValueRequest(key, value)) shouldBe SetStorageValueResponse.NotAllowed
       }
     }
 
