@@ -13,8 +13,8 @@ import ru.otus.sc.user.model.{
   DeleteUserResponse,
   FindUsersRequest,
   FindUsersResponse,
-  GetUserRequest,
-  GetUserResponse,
+  UserRequest,
+  UserResponse,
   UpdateUserRequest,
   UpdateUserResponse,
   User
@@ -45,7 +45,7 @@ class UserServiceImplSpec extends AnyFreeSpec with MockFactory {
 
         (dao.getUser _).expects(id).returns(Some(user1))
 
-        srv.getUser(GetUserRequest(id)) shouldBe GetUserResponse.Found(user1)
+        srv.getUser(UserRequest(id)) shouldBe UserResponse.Found(user1)
       }
 
       "should return not found" in {
@@ -55,7 +55,7 @@ class UserServiceImplSpec extends AnyFreeSpec with MockFactory {
 
         (dao.getUser _).expects(id).returns(None)
 
-        srv.getUser(GetUserRequest(id)) shouldBe GetUserResponse.NotFound(id)
+        srv.getUser(UserRequest(id)) shouldBe UserResponse.NotFound(id)
       }
     }
 

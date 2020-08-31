@@ -139,6 +139,29 @@ class UserDaoImplSpec extends AnyFreeSpec with MockFactory {
       }
     }
 
+    "find" - {
+      "should return empty list" in {
+        val dao = new UserDaoImpl
+        dao.createUser(user1.copy(id = None))
+        dao.createUser(user2.copy(id = None))
+
+        dao.find(from = Some(10), to = Some(15)) shouldBe Seq.empty
+        dao.find(firstName = Some("abc"), lastName = Some("xyzz")) shouldBe Seq.empty
+        dao.find(firstName = Some("xxx"), lastName = Some("Test")) shouldBe Seq.empty
+      }
+
+      "should return non-empty list" in {
+        val dao = new UserDaoImpl
+        val u1  = dao.createUser(user1.copy(id = None))
+        val u2  = dao.createUser(user2.copy(id = None))
+
+        dao.find(from = Some(10), to = Some(24)) shouldBe Seq(u2)
+        dao.find(firstName = Some(u1.firstName), lastName = Some(u1.lastName)) shouldBe Seq(u1)
+        dao.find(lastName = Some("Test")) shouldBe Seq(u1, u2)
+        dao.find(from = Some(10)) shouldBe Seq(u1, u2)
+      }
+    }
+
     "allUsers" - {
       "should return empty list" in {
         val dao = new UserDaoImpl

@@ -32,8 +32,8 @@ import ru.otus.sc.user.model.{
   DeleteUserResponse,
   FindUsersRequest,
   FindUsersResponse,
-  GetUserRequest,
-  GetUserResponse,
+  UserRequest,
+  UserResponse,
   UpdateUserRequest,
   UpdateUserResponse
 }
@@ -114,7 +114,7 @@ trait App {
   def logIn(request: LogInRequest): LoginResponse
 
   def createUser(request: CreateUserRequest): CreateUserResponse
-  def getUser(request: GetUserRequest): GetUserResponse
+  def getUser(request: UserRequest): UserResponse
   def updateUser(request: UpdateUserRequest): UpdateUserResponse
   def deleteUser(request: DeleteUserRequest): DeleteUserResponse
   def findUsers(request: FindUsersRequest): FindUsersResponse
@@ -155,7 +155,7 @@ object App {
     def logIn(request: LogInRequest): LoginResponse    = auth.logIn(request)
 
     def createUser(request: CreateUserRequest): CreateUserResponse = user.createUser(request)
-    def getUser(request: GetUserRequest): GetUserResponse          = user.getUser(request)
+    def getUser(request: UserRequest): UserResponse                = user.getUser(request)
     def updateUser(request: UpdateUserRequest): UpdateUserResponse = user.updateUser(request)
     def deleteUser(request: DeleteUserRequest): DeleteUserResponse = user.deleteUser(request)
     def findUsers(request: FindUsersRequest): FindUsersResponse    = user.findUsers(request)

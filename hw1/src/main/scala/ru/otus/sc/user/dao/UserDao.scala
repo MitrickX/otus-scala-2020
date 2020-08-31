@@ -13,6 +13,12 @@ trait UserDao {
   def findByLastName(lastName: String): Seq[User]
   def findByName(firstName: String, lastName: String): Seq[User]
   def findByAge(from: Int, to: Int): Seq[User]
+  def find(
+      firstName: Option[String] = None,
+      lastName: Option[String] = None,
+      from: Option[Int] = None,
+      to: Option[Int] = None
+  ): Seq[User]
   def allUsers: Seq[User]
 }
 
@@ -56,6 +62,22 @@ class UserDaoImpl extends UserDao {
 
   override def findByAge(from: Int, to: Int): Seq[User] =
     users.values.filter(user => user.age >= from && user.age <= to).toVector
+
+  override def find(
+      firstName: Option[String] = None,
+      lastName: Option[String] = None,
+      from: Option[Int] = None,
+      to: Option[Int] = None
+  ): Seq[User] =
+    users.values
+      .filter(user => {
+        val byFirstName = firstName.isEmpty || firstName.get == user.firstName
+        val byLastName  = lastName.isEmpty || lastName.get == user.lastName
+        val byFromAge   = from.isEmpty || from.get <= user.age
+        val byToAge     = to.isEmpty || to.get >= user.age
+        byFirstName && byLastName && byFromAge && byFromAge && byToAge
+      })
+      .toVector
 
   override def allUsers: Seq[User] = users.values.toVector
 }
