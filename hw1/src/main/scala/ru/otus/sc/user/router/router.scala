@@ -4,13 +4,20 @@ import akka.http.scaladsl.server.Route
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport._
 import ru.otus.sc.router.BaseRouter
 import ru.otus.sc.user.json.UserJsonProtocol._
-import ru.otus.sc.user.model.{CreateUserRequest, FindUsersRequest, User, UserRequest, UserResponse}
+import ru.otus.sc.user.model.{
+  CreateUserRequest,
+  FindUsersRequest,
+  UpdateUserRequest,
+  User,
+  UserRequest,
+  UserResponse
+}
 import ru.otus.sc.user.service.UserService
 
 class UserRouter(service: UserService) extends BaseRouter {
   override def route: Route =
     pathPrefix("users") {
-      getUser ~ getUsers ~ createUser
+      getUser ~ getUsers ~ createUser ~ updateUser
     }
 
   private def getUser: Route =
@@ -27,6 +34,13 @@ class UserRouter(service: UserService) extends BaseRouter {
       complete(response.user)
     }
 
+  private def updateUser: Route =
+    (put & path(JavaUUID) & entity(as[User])) { (id, user) =>
+      val updatedUser = user.copy(id = Some(id))
+      val response    = service.updateUser(UpdateUserRequest(updatedUser))
+      complete(response)
+    }
+
   val queryParams = parameters(
     "firstName".as[String].?,
     "lastName".as[String].?,
@@ -40,4 +54,5 @@ class UserRouter(service: UserService) extends BaseRouter {
       val response = service.findUsers(request)
       complete(response.users)
     }
+
 }
