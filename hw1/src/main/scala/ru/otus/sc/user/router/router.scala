@@ -6,6 +6,7 @@ import ru.otus.sc.router.BaseRouter
 import ru.otus.sc.user.json.UserJsonProtocol._
 import ru.otus.sc.user.model.{
   CreateUserRequest,
+  DeleteUserRequest,
   FindUsersRequest,
   UpdateUserRequest,
   User,
@@ -17,7 +18,7 @@ import ru.otus.sc.user.service.UserService
 class UserRouter(service: UserService) extends BaseRouter {
   override def route: Route =
     pathPrefix("users") {
-      getUser ~ getUsers ~ createUser ~ updateUser
+      getUser ~ getUsers ~ createUser ~ updateUser ~ deleteUser
     }
 
   private def getUser: Route =
@@ -38,6 +39,12 @@ class UserRouter(service: UserService) extends BaseRouter {
     (put & path(JavaUUID) & entity(as[User])) { (id, user) =>
       val updatedUser = user.copy(id = Some(id))
       val response    = service.updateUser(UpdateUserRequest(updatedUser))
+      complete(response)
+    }
+
+  private def deleteUser: Route =
+    (delete & path(JavaUUID)) { id =>
+      val response = service.deleteUser(DeleteUserRequest(id))
       complete(response)
     }
 
