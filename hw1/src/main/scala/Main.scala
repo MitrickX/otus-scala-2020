@@ -1,6 +1,7 @@
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import ru.otus.sc.user.dao.UserDaoImpl
+import ru.otus.sc.user.router.UserRouter
 import ru.otus.sc.user.service.UserServiceImpl
 
 import scala.io.StdIn
