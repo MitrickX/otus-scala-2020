@@ -7,6 +7,8 @@ import ru.otus.sc.user.dao.UserDaoImpl
 import ru.otus.sc.user.router.UserRouter
 import ru.otus.sc.user.service.UserServiceImpl
 import akka.http.scaladsl.server.Directives._
+import ru.otus.sc.echo.router.EchoRouter
+import ru.otus.sc.echo.service.EchoServiceImpl
 
 import scala.io.StdIn
 
@@ -22,10 +24,15 @@ object Main {
     val greetDao     = new GreetingDaoImpl
     val greetService = new GreetingServiceImpl(greetDao)
 
+    val echoService = new EchoServiceImpl
+
     val userRouter  = new UserRouter(userService)
     val greetRouter = new GreetRouter(greetService)
+    val echoRouter  = new EchoRouter(echoService)
 
-    val binding = Http().newServerAt("localhost", 8080).bind(userRouter.route ~ greetRouter.route)
+    val appRouter = userRouter.route ~ greetRouter.route ~ echoRouter.route
+
+    val binding = Http().newServerAt("localhost", 8080).bind(appRouter)
 
     binding.foreach(b => println(s"Binding on ${b.localAddress}"))
 
