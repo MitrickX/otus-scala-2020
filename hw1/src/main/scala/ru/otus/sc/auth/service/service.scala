@@ -11,17 +11,20 @@ trait AuthService {
 class AuthServiceImpl(dao: AuthDao) extends AuthService {
 
   def signUp(request: SignUpRequest): SignUpResponse = {
-    val result = dao.credentials(request.user, request.login) match {
-      case Some(_) => false
-      case None =>
-        dao.saveCredentials(request.user, request.login, request.password)
-        dao.exists(request.user, request.login)
+    if (dao.exists(request.userId, request.login)) {
+      SignUpResponse.AlreadySignedUp
+    } else {
+      dao.saveCredentials(request.userId, request.login, request.password)
+      if (dao.exists(request.userId, request.login)) {
+        SignUpResponse.Success
+      } else {
+        SignUpResponse.Fail
+      }
     }
-    SignUpResponse(result)
   }
 
   def logIn(request: LogInRequest): LoginResponse = {
-    val result = dao.credentials(request.user, request.login) match {
+    val result = dao.credentials(request.userId, request.login) match {
       case Some(credentials) => credentials._2 == request.password
       case None              => false
     }

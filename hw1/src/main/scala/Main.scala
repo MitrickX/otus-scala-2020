@@ -7,6 +7,9 @@ import ru.otus.sc.user.dao.UserDaoImpl
 import ru.otus.sc.user.router.UserRouter
 import ru.otus.sc.user.service.UserServiceImpl
 import akka.http.scaladsl.server.Directives._
+import ru.otus.sc.auth.dao.AuthDaoImpl
+import ru.otus.sc.auth.router.AuthRouter
+import ru.otus.sc.auth.service.AuthServiceImpl
 import ru.otus.sc.echo.router.EchoRouter
 import ru.otus.sc.echo.service.EchoServiceImpl
 
@@ -21,16 +24,20 @@ object Main {
     val userDao     = new UserDaoImpl
     val userService = new UserServiceImpl(userDao)
 
+    val authDao     = new AuthDaoImpl
+    val authService = new AuthServiceImpl(authDao)
+
     val greetDao     = new GreetingDaoImpl
     val greetService = new GreetingServiceImpl(greetDao)
 
     val echoService = new EchoServiceImpl
 
     val userRouter  = new UserRouter(userService)
+    val authRouter  = new AuthRouter(authService, userService)
     val greetRouter = new GreetRouter(greetService)
     val echoRouter  = new EchoRouter(echoService)
 
-    val appRouter = userRouter.route ~ greetRouter.route ~ echoRouter.route
+    val appRouter = userRouter.route ~ authRouter.route ~ greetRouter.route ~ echoRouter.route
 
     val binding = Http().newServerAt("localhost", 8080).bind(appRouter)
 

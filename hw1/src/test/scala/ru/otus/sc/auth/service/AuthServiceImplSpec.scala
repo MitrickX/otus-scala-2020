@@ -4,28 +4,36 @@ import java.util.UUID
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers._
 import ru.otus.sc.auth.dao.AuthDao
 import ru.otus.sc.auth.model.{LogInRequest, LoginResponse, SignUpRequest, SignUpResponse}
-import ru.otus.sc.user.model.User
-import org.scalatest.matchers.should.Matchers._
 
 class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
-  private val user1 = User(Some(UUID.randomUUID()), "User1", "Test", 30)
-  private val user2 = User(Some(UUID.randomUUID()), "User2", "Test", 24)
+  private val userId = UUID.randomUUID()
 
   "AuthServiceImpl tests" - {
     "signUp" - {
+      "already signed up" in {
+        val dao   = mock[AuthDao]
+        val srv   = new AuthServiceImpl(dao)
+        val login = "user1"
+
+        (dao.exists _).expects(userId, login).returns(true)
+
+        srv.signUp(SignUpRequest(userId, login, "1234")) shouldBe SignUpResponse.AlreadySignedUp
+      }
+
       "success sign up" in {
         val dao      = mock[AuthDao]
         val srv      = new AuthServiceImpl(dao)
         val login    = "user1"
         val password = "1234"
 
-        (dao.exists _).expects(user1, login).returns(true)
-        (dao.credentials _).expects(user1, login).returns(None)
-        (dao.saveCredentials _).expects(user1, login, password)
+        (dao.exists _).expects(userId, login).returns(false)
+        (dao.exists _).expects(userId, login).returns(true)
+        (dao.saveCredentials _).expects(userId, login, password)
 
-        srv.signUp(SignUpRequest(user1, login, password)) shouldBe SignUpResponse(true)
+        srv.signUp(SignUpRequest(userId, login, password)) shouldBe SignUpResponse.Success
       }
 
       "failed sign up" in {
@@ -34,9 +42,10 @@ class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
         val login    = "user1"
         val password = "1234"
 
-        (dao.credentials _).expects(user1, login).returns(Some((login, password)))
+        (dao.exists _).expects(userId, login).returns(false).atLeastTwice()
+        (dao.saveCredentials _).expects(userId, login, password)
 
-        srv.signUp(SignUpRequest(user1, login, password)) shouldBe SignUpResponse(false)
+        srv.signUp(SignUpRequest(userId, login, password)) shouldBe SignUpResponse.Fail
       }
     }
 
@@ -47,9 +56,9 @@ class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
         val login    = "user1"
         val password = "1234"
 
-        (dao.credentials _).expects(user1, login).returns(Some(login, password))
+        (dao.credentials _).expects(userId, login).returns(Some(login, password))
 
-        srv.logIn(LogInRequest(user1, login, password)) shouldBe LoginResponse(true)
+        srv.logIn(LogInRequest(userId, login, password)) shouldBe LoginResponse(true)
       }
 
       "failed log in" in {
@@ -58,9 +67,9 @@ class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
         val login    = "user1"
         val password = "1234"
 
-        (dao.credentials _).expects(user1, login).returns(None)
+        (dao.credentials _).expects(userId, login).returns(None)
 
-        srv.logIn(LogInRequest(user1, login, password)) shouldBe LoginResponse(false)
+        srv.logIn(LogInRequest(userId, login, password)) shouldBe LoginResponse(false)
       }
     }
   }

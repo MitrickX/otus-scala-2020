@@ -1,7 +1,15 @@
 package ru.otus.sc.auth.model
-import ru.otus.sc.user.model.User
+import java.util.UUID
 
-case class LogInRequest(user: User, login: String, password: String)
+case class LogInRequest(userId: UUID, login: String, password: String)
 case class LoginResponse(result: Boolean)
-case class SignUpRequest(user: User, login: String, password: String)
-case class SignUpResponse(result: Boolean)
+
+case class SignUpRequest(userId: UUID, login: String, password: String)
+
+sealed trait SignUpResponse
+object SignUpResponse {
+  case object AlreadySignedUp extends SignUpResponse
+  case object Success         extends SignUpResponse
+  case object Fail            extends SignUpResponse
+
+}
