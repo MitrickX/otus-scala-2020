@@ -1,11 +1,13 @@
 package ru.otus.sc.auth.service
 
+import java.util.UUID
+
 import ru.otus.sc.auth.dao.AuthDao
-import ru.otus.sc.auth.model.{LogInRequest, LoginResponse, SignUpRequest, SignUpResponse}
+import ru.otus.sc.auth.model.{LogInRequest, LogInResponse, SignUpRequest, SignUpResponse}
 
 trait AuthService {
   def signUp(request: SignUpRequest): SignUpResponse
-  def logIn(request: LogInRequest): LoginResponse
+  def logIn(request: LogInRequest): LogInResponse
 }
 
 class AuthServiceImpl(dao: AuthDao) extends AuthService {
@@ -23,11 +25,22 @@ class AuthServiceImpl(dao: AuthDao) extends AuthService {
     }
   }
 
-  def logIn(request: LogInRequest): LoginResponse = {
-    val result = dao.credentials(request.userId, request.login) match {
-      case Some(credentials) => credentials._2 == request.password
-      case None              => false
+  def logIn(request: LogInRequest): LogInResponse = {
+    def login(userId: UUID): LogInResponse =
+      dao.credentials(userId, request.login) match {
+        case Some(credentials) =>
+          if (credentials._2 == request.password) {
+            LogInResponse.Success(userId)
+          } else {
+            LogInResponse.Fail
+          }
+        case None => LogInResponse.Fail
+      }
+
+    dao.findByLogin(request.login) match {
+      case Some(userId) => login(userId)
+      case None         => LogInResponse.Fail
     }
-    LoginResponse(result)
+
   }
 }

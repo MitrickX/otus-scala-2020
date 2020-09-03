@@ -11,72 +11,118 @@ import org.scalatest.matchers.should.Matchers._
 import play.api.libs.json.Json
 import ru.otus.sc.auth.dao.AuthDaoImpl
 import ru.otus.sc.auth.json.AuthJsonProtocol._
-import ru.otus.sc.auth.model.{SignUpRequest, SignUpResponse}
+import ru.otus.sc.auth.model.{LogInRequest, LogInResponse, SignUpRequest, SignUpResponse}
 import ru.otus.sc.auth.service.{AuthService, AuthServiceImpl}
 import ru.otus.sc.user.model.{User, UserRequest, UserResponse}
 import ru.otus.sc.user.service.UserService
 
 class AuthRouterSpec extends AnyFreeSpec with ScalatestRouteTest with MockFactory {
   "Methods tests" - {
-    "user not found" in {
-      val userService = mock[UserService]
-      val userId      = UUID.randomUUID()
+    "signup" - {
+      "user not found" in {
+        val userService = mock[UserService]
+        val userId      = UUID.randomUUID()
 
-      (userService.getUser _).expects(UserRequest(userId)).returns(UserResponse.NotFound(userId))
+        (userService.getUser _).expects(UserRequest(userId)).returns(UserResponse.NotFound(userId))
 
-      val authDao     = new AuthDaoImpl
-      val authService = new AuthServiceImpl(authDao)
+        val authDao     = new AuthDaoImpl
+        val authService = new AuthServiceImpl(authDao)
 
-      val router = new AuthRouter(authService, userService)
+        val router = AuthRouter.SignUpRouter(authService, userService)
 
-      val request = SignUpRequest(userId, "user1", "1234")
+        val request = SignUpRequest(userId, "user1", "1234")
 
-      Post(s"/auth/signup/$userId", Json.toJson(request)) ~> router.route ~> check {
-        handled shouldBe true
-        status shouldBe StatusCodes.NotFound
+        Post(s"/auth/signup/$userId", Json.toJson(request)) ~> router.route ~> check {
+          handled shouldBe true
+          status shouldBe StatusCodes.NotFound
+        }
+      }
+
+      "successful" in {
+        val userService = mock[UserService]
+        val userId      = UUID.randomUUID()
+        val user        = User(Some(userId), "user2", "test", 35)
+
+        (userService.getUser _).expects(UserRequest(userId)).returns(UserResponse.Found(user))
+
+        val authDao     = new AuthDaoImpl
+        val authService = new AuthServiceImpl(authDao)
+
+        val router = AuthRouter.SignUpRouter(authService, userService)
+
+        val request = SignUpRequest(userId, "user1", "1234")
+
+        Post(s"/auth/signup/$userId", Json.toJson(request)) ~> router.route ~> check {
+          handled shouldBe true
+          responseAs[SignUpResponse] shouldBe SignUpResponse.Success
+          status shouldBe StatusCodes.OK
+        }
+      }
+
+      "fail" in {
+        val authService = mock[AuthService]
+        val userService = mock[UserService]
+
+        val router  = AuthRouter.SignUpRouter(authService, userService)
+        val userId  = UUID.randomUUID()
+        val request = SignUpRequest(userId, "user1", "1234")
+
+        val user = User(Some(userId), "user2", "test", 35)
+
+        (userService.getUser _).expects(UserRequest(userId)).returns(UserResponse.Found(user))
+
+        (authService.signUp _).expects(request).returns(SignUpResponse.Fail)
+
+        Post(s"/auth/signup/$userId", Json.toJson(request)) ~> router.route ~> check {
+          handled shouldBe true
+          responseAs[SignUpResponse] shouldBe SignUpResponse.Fail
+          status shouldBe StatusCodes.OK
+        }
       }
     }
 
-    "signup successful" in {
-      val userService = mock[UserService]
-      val userId      = UUID.randomUUID()
-      val user        = User(Some(userId), "user2", "test", 35)
+    "login" - {
+      "successful" in {
+        val authService = mock[AuthService]
+        val login       = "test"
+        val password    = "1234"
+        val userId      = UUID.randomUUID()
 
-      (userService.getUser _).expects(UserRequest(userId)).returns(UserResponse.Found(user))
+        (authService.logIn _)
+          .expects(LogInRequest(login, password))
+          .returns(LogInResponse.Success(userId))
 
-      val authDao     = new AuthDaoImpl
-      val authService = new AuthServiceImpl(authDao)
+        val router = AuthRouter.LogInRouter(authService)
 
-      val router = new AuthRouter(authService, userService)
+        val request = LogInRequest(login, password)
 
-      val request = SignUpRequest(userId, "user1", "1234")
-
-      Post(s"/auth/signup/$userId", Json.toJson(request)) ~> router.route ~> check {
-        handled shouldBe true
-        responseAs[SignUpResponse] shouldBe SignUpResponse.Success
-        status shouldBe StatusCodes.OK
+        Post(s"/auth/login/", Json.toJson(request)) ~> router.route ~> check {
+          handled shouldBe true
+          responseAs[LogInResponse] shouldBe LogInResponse.Success(userId)
+          status shouldBe StatusCodes.OK
+        }
       }
+
+      "fail" in {
+        val authService = mock[AuthService]
+        val login       = "test"
+        val password    = "1234"
+
+        (authService.logIn _)
+          .expects(LogInRequest(login, password))
+          .returns(LogInResponse.Fail)
+
+        val router = AuthRouter.LogInRouter(authService)
+
+        val request = LogInRequest(login, password)
+
+        Post(s"/auth/login/", Json.toJson(request)) ~> router.route ~> check {
+          handled shouldBe true
+          status shouldBe StatusCodes.Forbidden
+        }
+      }
+
     }
 
-    "signup fail" in {
-      val authService = mock[AuthService]
-      val userService = mock[UserService]
-
-      val router  = new AuthRouter(authService, userService)
-      val userId  = UUID.randomUUID()
-      val request = SignUpRequest(userId, "user1", "1234")
-
-      val user = User(Some(userId), "user2", "test", 35)
-
-      (userService.getUser _).expects(UserRequest(userId)).returns(UserResponse.Found(user))
-
-      (authService.signUp _).expects(request).returns(SignUpResponse.Fail)
-
-      Post(s"/auth/signup/$userId", Json.toJson(request)) ~> router.route ~> check {
-        handled shouldBe true
-        responseAs[SignUpResponse] shouldBe SignUpResponse.Fail
-        status shouldBe StatusCodes.OK
-      }
-    }
   }
 }

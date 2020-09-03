@@ -1,7 +1,7 @@
 package ru.otus.sc
 
 import ru.otus.sc.auth.dao.AuthDaoImpl
-import ru.otus.sc.auth.model.{LogInRequest, LoginResponse, SignUpRequest, SignUpResponse}
+import ru.otus.sc.auth.model.{LogInRequest, LogInResponse, SignUpRequest, SignUpResponse}
 import ru.otus.sc.auth.service.{AuthService, AuthServiceImpl}
 import ru.otus.sc.echo.model.{EchoRequest, EchoResponse}
 import ru.otus.sc.echo.service.EchoService
@@ -111,7 +111,7 @@ trait App {
     * @param request request to logging in
     * @return response about logging in
     */
-  def logIn(request: LogInRequest): LoginResponse
+  def logIn(request: LogInRequest): LogInResponse
 
   def createUser(request: CreateUserRequest): CreateUserResponse
   def getUser(request: UserRequest): UserResponse
@@ -152,7 +152,7 @@ object App {
     def sessionUser(request: SessionUserRequest): SessionUserResponse       = session.user(request)
 
     def signUp(request: SignUpRequest): SignUpResponse = auth.signUp(request)
-    def logIn(request: LogInRequest): LoginResponse    = auth.logIn(request)
+    def logIn(request: LogInRequest): LogInResponse    = auth.logIn(request)
 
     def createUser(request: CreateUserRequest): CreateUserResponse = user.createUser(request)
     def getUser(request: UserRequest): UserResponse                = user.getUser(request)

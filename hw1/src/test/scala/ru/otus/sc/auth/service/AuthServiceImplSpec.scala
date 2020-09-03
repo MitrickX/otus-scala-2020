@@ -6,7 +6,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers._
 import ru.otus.sc.auth.dao.AuthDao
-import ru.otus.sc.auth.model.{LogInRequest, LoginResponse, SignUpRequest, SignUpResponse}
+import ru.otus.sc.auth.model.{LogInRequest, LogInResponse, SignUpRequest, SignUpResponse}
 
 class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
   private val userId = UUID.randomUUID()
@@ -56,9 +56,10 @@ class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
         val login    = "user1"
         val password = "1234"
 
+        (dao.findByLogin _).expects(login).returns(Some(userId))
         (dao.credentials _).expects(userId, login).returns(Some(login, password))
 
-        srv.logIn(LogInRequest(userId, login, password)) shouldBe LoginResponse(true)
+        srv.logIn(LogInRequest(login, password)) shouldBe LogInResponse.Success(userId)
       }
 
       "failed log in" in {
@@ -67,9 +68,9 @@ class AuthServiceImplSpec extends AnyFreeSpec with MockFactory {
         val login    = "user1"
         val password = "1234"
 
-        (dao.credentials _).expects(userId, login).returns(None)
+        (dao.findByLogin _).expects(login).returns(None)
 
-        srv.logIn(LogInRequest(userId, login, password)) shouldBe LoginResponse(false)
+        srv.logIn(LogInRequest(login, password)) shouldBe LogInResponse.Fail
       }
     }
   }

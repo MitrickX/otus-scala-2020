@@ -42,5 +42,23 @@ class AuthDaoImplSpec extends AnyFreeSpec with MockFactory {
         dao.exists(userId, "user1") shouldBe false
       }
     }
+
+    "find by login" - {
+
+      "found" in {
+        val dao   = new AuthDaoImpl
+        val login = "user1"
+        dao.saveCredentials(userId, "user1", "1234")
+        dao.findByLogin(login) shouldBe Some(userId)
+      }
+
+      "not found" in {
+        val dao    = new AuthDaoImpl
+        val login1 = "user1"
+        val login2 = "user2"
+        dao.saveCredentials(userId, "user1", "1234")
+        dao.findByLogin(login2) shouldBe None
+      }
+    }
   }
 }

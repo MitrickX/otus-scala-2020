@@ -4,6 +4,7 @@ import java.util.UUID
 trait AuthDao {
   def saveCredentials(userId: UUID, login: String, password: String): Unit
   def credentials(userId: UUID, login: String): Option[(String, String)]
+  def findByLogin(login: String): Option[UUID]
   def exists(userId: UUID, login: String): Boolean
 }
 
@@ -18,6 +19,9 @@ class AuthDaoImpl extends AuthDao {
 
   def credentials(userId: UUID, login: String): Option[(String, String)] =
     credentials.get(userId)
+
+  def findByLogin(login: String): Option[UUID] =
+    credentials.find(_._2._1 == login).map(_._1)
 
   def exists(userId: UUID, login: String): Boolean =
     credentials.get(userId) match {
